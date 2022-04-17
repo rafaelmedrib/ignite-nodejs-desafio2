@@ -32,7 +32,26 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const { todoId } = request.params.id;
+  const user = users.find(user => user.username === username);
+  const todo = user.todos.find(todo => todo.id === todoId);
+  if(!user) {
+    return response.status(404).send();
+  }
+
+  if(!todoId.validate()) {
+    return response.status(400).send();
+  }
+
+  if(!todo) {
+    return response.status(404).send();
+  }
+
+  request.user = user;
+  request.todo = todo;
+
+  next();
 }
 
 function findUserById(request, response, next) {
