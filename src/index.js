@@ -22,7 +22,13 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { todos, pro } = request.user;
+
+  if(pro === false && todos.length >= 10) {
+    return response.status(403).json({error: "cannot create more todos with a free account"});
+  }
+
+  next();
 }
 
 function checksTodoExists(request, response, next) {
