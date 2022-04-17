@@ -33,19 +33,22 @@ function checksCreateTodosUserAvailability(request, response, next) {
 
 function checksTodoExists(request, response, next) {
   const { username } = request.headers;
-  const { todoId } = request.params.id;
   const user = users.find(user => user.username === username);
-  const todo = user.todos.find(todo => todo.id === todoId);
+  
   if(!user) {
-    return response.status(404).send();
+    return response.status(404).json({error: "user not found"});
   }
+  
+  const todoId = request.params.id;
 
-  if(!todoId.validate()) {
-    return response.status(400).send();
+  if(!validate(todoId)) {
+    return response.status(400).json({error: "id is not a valid uuid"});
   }
+  
+  const todo = user.todos.find(todo => todo.id === todoId);
 
   if(!todo) {
-    return response.status(404).send();
+    return response.status(404).json({error: "todo not found"});
   }
 
   request.user = user;
@@ -55,11 +58,11 @@ function checksTodoExists(request, response, next) {
 }
 
 function findUserById(request, response, next) {
-  const { id } = request.params.id;
+  const id = request.params.id;
   const user = users.find(user => user.id === id);
 
   if(!user) {
-    return response.status(404).send();
+    return response.status(404).json({error: "user not found"});
   }
 
   request.user = user;
